@@ -4,7 +4,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:store_api_flutter_course/consts/global_colors.dart';
-import 'package:store_api_flutter_course/models/discounted_products%20.dart';
+import 'package:store_api_flutter_course/models/discounted_products.dart';
 import 'package:store_api_flutter_course/services/api_handler.dart';
 import 'package:store_api_flutter_course/screens/feeds_screen.dart';
 import 'package:store_api_flutter_course/screens/users_screen.dart';

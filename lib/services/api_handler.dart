@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:store_api_flutter_course/models/discounted_products%20.dart';
+import 'package:store_api_flutter_course/models/discounted_products.dart';
 import 'package:store_api_flutter_course/models/users_model.dart';
 
 import '../models/products_model.dart';
