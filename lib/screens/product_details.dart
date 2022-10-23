@@ -1,19 +1,17 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
+import 'package:store_api_flutter_course/models/products_model.dart';
 
 import '../consts/global_colors.dart';
 
-class ProductDetails extends StatefulWidget {
+class ProductDetails extends StatelessWidget {
+  final OurProducts myProduct;
   const ProductDetails({
+    required this.myProduct,
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<ProductDetails> createState() => _ProductDetailsState();
-}
-
-class _ProductDetailsState extends State<ProductDetails> {
   final titleStyle = const TextStyle(fontSize: 24, fontWeight: FontWeight.bold);
 
   @override
@@ -23,7 +21,7 @@ class _ProductDetailsState extends State<ProductDetails> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const SizedBox(
@@ -31,14 +29,17 @@ class _ProductDetailsState extends State<ProductDetails> {
               ),
               const BackButton(),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Category",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    Text(
+                      myProduct.category![0].toUpperCase() +
+                          myProduct.category!.substring(1),
+                      style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff3C4048)),
                     ),
                     const SizedBox(
                       height: 18,
@@ -47,11 +48,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          flex: 3,
+                          flex: 2,
                           child: Text(
-                            "Lorem Ipsum",
+                            myProduct.title!,
                             textAlign: TextAlign.start,
-                            style: titleStyle,
+                            style: titleStyle.copyWith(
+                                color: const Color(0xFFDC5F00)),
                           ),
                         ),
                         Flexible(
@@ -64,7 +66,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                                     color: Color.fromRGBO(33, 150, 243, 1)),
                                 children: <TextSpan>[
                                   TextSpan(
-                                      text: "168.00",
+                                      text: myProduct.price.toString(),
                                       style: TextStyle(
                                           color: lightTextColor,
                                           fontWeight: FontWeight.bold)),
@@ -85,39 +87,40 @@ class _ProductDetailsState extends State<ProductDetails> {
                   itemBuilder: (BuildContext context, int index) {
                     return FancyShimmerImage(
                       width: double.infinity,
-                      imageUrl: "https://placeimg.com/640/480/any",
+                      imageUrl: myProduct.image!,
                       boxFit: BoxFit.fill,
                     );
                   },
-
-                  autoplay: true,
-                  itemCount: 3,
+                  autoplay: false,
+                  itemCount: 1,
                   pagination: const SwiperPagination(
                     alignment: Alignment.bottomCenter,
                     builder: DotSwiperPaginationBuilder(
                       color: Colors.white,
-                      activeColor: Colors.red,
+                      activeColor: Color.fromARGB(255, 0, 89, 255),
                     ),
                   ),
-                  // control: const SwiperControl(),
                 ),
               ),
               const SizedBox(
                 height: 18,
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Description', style: titleStyle),
+                    Text('Description',
+                        style: titleStyle.copyWith(
+                            color: const Color(0xFFDC5F00))),
                     const SizedBox(
                       height: 18,
                     ),
-                    const Text(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                    Text(
+                      myProduct.description!,
                       textAlign: TextAlign.start,
-                      style: TextStyle(fontSize: 25),
+                      style: const TextStyle(
+                          fontSize: 20, color: Color.fromARGB(255, 67, 64, 64)),
                     ),
                   ],
                 ),

@@ -2,35 +2,22 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 import 'package:store_api_flutter_course/consts/global_colors.dart';
-import 'package:store_api_flutter_course/screens/categories_screen.dart';
+import 'package:store_api_flutter_course/models/discounted_products%20.dart';
+import 'package:store_api_flutter_course/services/api_handler.dart';
 import 'package:store_api_flutter_course/screens/feeds_screen.dart';
 import 'package:store_api_flutter_course/screens/users_screen.dart';
-
+import '../models/products_model.dart';
 import '../widgets/appbar_icons.dart';
 import '../widgets/feeds_widget.dart';
 import '../widgets/sale_widget.dart';
+import 'package:http/http.dart' as http;
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatelessWidget {
+  HomeScreen({Key? key}) : super(key: key);
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  late TextEditingController _textEditingController;
-  @override
-  void initState() {
-    _textEditingController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _textEditingController.dispose();
-    super.dispose();
-  }
+  final TextEditingController _textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,18 +28,10 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Scaffold(
           appBar: AppBar(
-            // elevation: 4,
+            elevation: 4,
             title: const Text('Home'),
             leading: AppBarIcons(
-              function: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    type: PageTransitionType.fade,
-                    child: const CategoriesScreen(),
-                  ),
-                );
-              },
+              function: () {},
               icon: IconlyBold.category,
             ),
             actions: [
@@ -101,7 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         IconlyLight.search,
                         color: lightIconsColor,
                       )),
-                ), const SizedBox(
+                ),
+                const SizedBox(
                   height: 18,
                 ),
                 Expanded(
@@ -109,18 +89,37 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(children: [
                       SizedBox(
                         height: size.height * 0.25,
-                        child: Swiper(
-                          itemCount: 3,
-                          itemBuilder: (ctx, index) {
-                            return const SaleWidget();
+                        child: FutureBuilder(
+                          future: context.read<ApiHandler>().getDiscounts(),
+                          builder: (context,
+                              AsyncSnapshot<List<DiscountedProducts>>
+                                  snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              return Swiper(
+                                itemCount: snapshot.data![0].images![0].isEmpty
+                                    ? 1
+                                    : snapshot.data![0].images!.length,
+                                itemBuilder: (ctx, index) {
+                                  return SaleWidget(
+                                    image: snapshot.data![0].images![0].isEmpty
+                                        ? snapshot.data![0].category!.image!
+                                        : snapshot.data![0].images![index],
+                                    // image: snapshot.data![5].category!.image!,
+                                  );
+                                },
+                                autoplay: true,
+                                pagination: const SwiperPagination(
+                                    alignment: Alignment.bottomCenter,
+                                    builder: DotSwiperPaginationBuilder(
+                                        color: Colors.white,
+                                        activeColor: Colors.red)),
+                                // control: const SwiperControl(),
+                              );
+                            }
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
                           },
-                          autoplay: true,
-                          pagination: const SwiperPagination(
-                              alignment: Alignment.bottomCenter,
-                              builder: DotSwiperPaginationBuilder(
-                                  color: Colors.white,
-                                  activeColor: Colors.red)),
-                          // control: const SwiperControl(),
                         ),
                       ),
                       Padding(
@@ -147,19 +146,37 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 3,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 0.0,
-                                  mainAxisSpacing: 0.0,
-                                  childAspectRatio: 0.7),
-                          itemBuilder: (ctx, index) {
-                            return const FeedsWidget();
-                          })
+                      Consumer<ApiHandler>(
+                        builder: (context, value, child) {
+                          return FutureBuilder(
+                            future: value.getProducts(),
+                            builder: (context,
+                                AsyncSnapshot<List<OurProducts>> snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: 5,
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            crossAxisSpacing: 0.0,
+                                            mainAxisSpacing: 0.0,
+                                            childAspectRatio: 0.7),
+                                    itemBuilder: (ctx, index) {
+                                      return FeedsWidget(
+                                        myProduct: snapshot.data![index],
+                                      );
+                                    });
+                              }
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            },
+                          );
+                        },
+                      )
                     ]),
                   ),
                 )
